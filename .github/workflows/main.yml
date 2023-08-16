@@ -1,0 +1,34 @@
+name: Update Typecho
+
+on:
+  schedule:
+    - cron: '25,50 * * * *'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Set up Git configuration
+        run: |
+          git config --global user.name "gopcn"
+          git config --global user.email "121377609+gopcn@users.noreply.github.com"
+          git checkout main
+
+      - name: Download and extract Typecho
+        run: |
+          download_url="https://github.com/typecho/typecho/releases/latest/download/typecho.zip"
+          echo "Downloading $download_url"
+          curl -sSL "$download_url" -o typecho.zip
+          unzip -o typecho.zip
+          rm -f typecho.zip LICENSE.txt
+
+      - name: Commit and push changes
+        run: |
+          git add .
+          git diff-index --quiet HEAD || git commit -m "Update Typecho files"
+          git push origin main
