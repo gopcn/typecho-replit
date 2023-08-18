@@ -1,4 +1,4 @@
-name: Update Typecho
+name: Update Typecho files
 
 on:
   schedule:
@@ -17,18 +17,21 @@ jobs:
         run: |
           git config --global user.name "gopcn"
           git config --global user.email "121377609+gopcn@users.noreply.github.com"
-          git checkout main
+
+      - name: Get latest release
+        id: get-latest-release
+        uses: pozetroninc/github-action-get-latest-release@master
+        with:
+          repository: typecho/typecho
+          excludes: prerelease, draft
 
       - name: Download and extract Typecho
         run: |
-          download_url="https://github.com/typecho/typecho/releases/latest/download/typecho.zip"
-          echo "Downloading $download_url"
-          curl -sSL "$download_url" -o typecho.zip
-          unzip -o typecho.zip
-          rm -f typecho.zip LICENSE.txt
+          curl -sL "https://github.com/typecho/typecho/releases/latest/download/typecho.zip" -o typecho.zip
+          unzip -o typecho.zip && rm -f typecho.zip LICENSE.txt
 
       - name: Commit and push changes
         run: |
           git add .
-          git diff-index --quiet HEAD || git commit -m "Update Typecho files"
+          git diff-index --quiet HEAD || git commit -m "${{ steps.get-latest-release.outputs.release }}"
           git push origin main
