@@ -2,7 +2,7 @@ name: Update Typecho files
 
 on:
   schedule:
-    - cron: '25,50 * * * *'
+    - cron: '*/15 * * * *'
   workflow_dispatch:
 
 jobs:
@@ -24,6 +24,7 @@ jobs:
         with:
           repository: typecho/typecho
           excludes: prerelease, draft
+          token: ${{ secrets.AUTH_PAT }}
 
       - name: Download and extract Typecho
         run: |
